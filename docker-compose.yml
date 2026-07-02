@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: stockpro_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ${DB_NAME:-stockpro}
+      POSTGRES_USER:     ${DB_USER:-stockpro}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-stockpro}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [stockpro_net]
+    ports:
+      - "5432:5432"   # remove in production
+
+  app:
+    build: .
+    container_name: stockpro_app
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_HOST:       db
+      DB_PORT:       5432
+      DB_NAME:       ${DB_NAME:-stockpro}
+      DB_USER:       ${DB_USER:-stockpro}
+      DB_PASSWORD:   ${DB_PASSWORD}
+      JWT_SECRET:    ${JWT_SECRET}
+      CORS_ORIGINS:  ${CORS_ORIGINS:-http://localhost:8080}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    networks: [stockpro_net]
+
+volumes:
+  postgres_data:
+
+networks:
+  stockpro_net:
+    driver: bridge

@@ -2,10 +2,10 @@ spring:
   application:
     name: stockpro
     
-  datasource:
-    url: postgresql://dealerpro_user:wkF7sf4hr9N4VUGGRYLUX4uyqekia3AJ@dpg-d9ebejn7f7vs73a98v90-a.virginia-postgres.render.com/dealerpro
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+   datasource:
+    url: jdbc:postgresql://dpg-d9ebejn7f7vs73a98v90-a.virginia-postgres.render.com:5432/dealerpro
+    username: dealerpro_user
+    password: wkF7sf4hr9N4VUGGRYLUX4uyqekia3AJ
     hikari:
       maximum-pool-size: 20
       minimum-idle: 5

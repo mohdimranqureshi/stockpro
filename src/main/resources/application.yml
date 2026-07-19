@@ -2,7 +2,7 @@ spring:
   application:
     name: stockpro
     
-   datasource:
+  datasource:
     url: jdbc:postgresql://dpg-d9ebejn7f7vs73a98v90-a.virginia-postgres.render.com:5432/dealerpro
     username: dealerpro_user
     password: wkF7sf4hr9N4VUGGRYLUX4uyqekia3AJ

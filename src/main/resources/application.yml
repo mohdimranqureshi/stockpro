@@ -2,10 +2,11 @@ spring:
   application:
     name: stockpro
 
+spring:
   datasource:
-    url: jdbc:postgresql://${DB_HOST:dpg-d9ebejn7f7vs73a98v90-a}:${DB_PORT:5432}/${DB_NAME:dealerpro}
-    username: ${DB_USER:dealerpro_user}
-    password: ${DB_PASSWORD:wkF7sf4hr9N4VUGGRYLUX4uyqekia3AJ}
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT:5432}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     hikari:
       maximum-pool-size: 20
       minimum-idle: 5

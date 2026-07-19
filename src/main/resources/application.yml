@@ -3,9 +3,9 @@ spring:
     name: stockpro
 
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:dealerpro}
-    username: ${DB_USER:dealerpro}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://${DB_HOST:dpg-d9ebejn7f7vs73a98v90-a}:${DB_PORT:5432}/${DB_NAME:dealerpro}
+    username: ${DB_USER:dealerpro_user}
+    password: ${DB_PASSWORD:wkF7sf4hr9N4VUGGRYLUX4uyqekia3AJ}
     hikari:
       maximum-pool-size: 20
       minimum-idle: 5

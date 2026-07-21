@@ -73,7 +73,7 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
-            <button type="submit" disabled={loading} className="btn-primary w-full py-3 mt-2">
+            <button type="submit" disabled={loading} aria-busy={loading} className="btn-primary w-full py-3 mt-2">
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>

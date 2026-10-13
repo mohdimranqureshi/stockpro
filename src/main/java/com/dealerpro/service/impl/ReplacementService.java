@@ -18,44 +18,54 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class ReplacementService {
 
-    private final ReplacementRepository replacementRepository;
-    private final StockRepository       stockRepository;
-    private final CurrentUserService    currentUser;
+	private final ReplacementRepository replacementRepository;
+	private final StockRepository stockRepository;
+	private final CurrentUserService currentUser;
 
-    @Transactional
-    public Replacement create(ReplacementRequest req) {
-        Replacement r = Replacement.builder()
-                .customerName(req.getCustomerName()).customerPhone(req.getCustomerPhone())
-                .givenItemName(req.getGivenItemName()).givenSku(req.getGivenSku())
-                .givenValue(req.getGivenValue() != null ? req.getGivenValue() : BigDecimal.ZERO)
-                .receivedItemName(req.getReceivedItemName()).receivedSku(req.getReceivedSku())
-                .receivedValue(req.getReceivedValue()    != null ? req.getReceivedValue()    : BigDecimal.ZERO)
-                .differenceAmount(req.getDifferenceAmount() != null ? req.getDifferenceAmount() : BigDecimal.ZERO)
-                .replacementDate(req.getReplacementDate()).notes(req.getNotes())
-                .build();
+	@Transactional
+	public Replacement create(ReplacementRequest req) {
+		Replacement r = Replacement.builder().customerName(req.getCustomerName()).customerPhone(req.getCustomerPhone())
+				.givenItemName(req.getGivenItemName()).givenSku(req.getGivenSku())
+				.givenValue(req.getGivenValue() != null ? req.getGivenValue() : BigDecimal.ZERO)
+				.receivedItemName(req.getReceivedItemName()).receivedSku(req.getReceivedSku())
+				.receivedValue(req.getReceivedValue() != null ? req.getReceivedValue() : BigDecimal.ZERO)
+				.differenceAmount(req.getDifferenceAmount() != null ? req.getDifferenceAmount() : BigDecimal.ZERO)
+				.replacementDate(req.getReplacementDate()).notes(req.getNotes())
+				.companyItemName(req.getCompanyItemName()).companySerialNumber(req.getCompanySerialNumber())
+				.companyChallanNumber(req.getCompanyChallanNumber()).build();
 
-        if (req.getGivenStockId() != null) {
-            stockRepository.findById(req.getGivenStockId()).ifPresent(r::setGivenStock);
-        }
-        return replacementRepository.save(r);
-    }
+		if (req.getGivenStockId() != null) {
+			stockRepository.findById(req.getGivenStockId()).ifPresent(r::setGivenStock);
+		}
+		return replacementRepository.save(r);
+	}
 
-    public Page<Replacement> findAll(LocalDate from, LocalDate to, String customer,
-                                      Long requestedUserId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("replacementDate").descending());
-        Long createdBy = currentUser.resolveDataFilter(requestedUserId);
-        return replacementRepository.findByFilters(from, to, customer, createdBy, pageable);
-    }
+	public Page<Replacement> findAll(LocalDate from, LocalDate to, String customer, Long requestedUserId, int page,
+			int size) {
+		Pageable pageable = PageRequest.of(page, size, Sort.by("replacementDate").descending());
 
-    public Replacement findById(Long id) {
-        Replacement r = replacementRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Replacement", id));
-        if (!currentUser.isAdmin() && !r.getCreatedBy().equals(currentUser.getUserId())) {
-            throw new ResourceNotFoundException("Replacement");
-        }
-        return r;
-    }
+		Long createdBy = currentUser.resolveDataFilter(requestedUserId);
 
-    @Transactional
-    public void delete(Long id) { replacementRepository.delete(findById(id)); }
+		String search = customer == null ? "" : customer.trim();
+
+		if (search.isEmpty()) {
+			return replacementRepository.findByFiltersWithoutCustomerName(from, to, createdBy, pageable);
+		}
+
+		return replacementRepository.findByFiltersWithCustomerName(from, to, search, createdBy, pageable);
+	}
+
+	public Replacement findById(Long id) {
+		Replacement r = replacementRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Replacement", id));
+		if (!currentUser.isAdmin() && !r.getCreatedBy().equals(currentUser.getUserId())) {
+			throw new ResourceNotFoundException("Replacement");
+		}
+		return r;
+	}
+
+	@Transactional
+	public void delete(Long id) {
+		replacementRepository.delete(findById(id));
+	}
 }

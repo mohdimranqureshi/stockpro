@@ -30,6 +30,20 @@ export default api
 
 // ── API helpers ──────────────────────────────────────────────
 
+export const gstApi = {
+  // Calls backend which proxies hsncodefinder.app/api/rates.php
+  // Filters c == hsn, returns r as gstRate
+  rate: (hsn) => api.get('/gst/rate', { params: { hsn } }),
+}
+
+export const hsnApi = {
+  search: (q, size = 100) => api.get('/hsn', { params: { q, size } }),
+}
+
+export const sacApi = {
+  search: (q, size = 100) => api.get('/sac', { params: { q, size } }),
+}
+
 export const authApi = {
   login:    (data) => api.post('/auth/login', data),
   register: (data) => api.post('/auth/register', data),
@@ -57,11 +71,12 @@ export const stockApi = {
 }
 
 export const transactionApi = {
-  list:       (params) => api.get('/transactions', { params }),
-  get:        (id)     => api.get(`/transactions/${id}`),
-  create:     (data)   => api.post('/transactions', data),
-  summary:    (userId) => api.get('/transactions/summary', { params: userId ? { userId } : {} }),
-  monthlyPL:  (year, userId) => api.get('/transactions/profit-loss/monthly', { params: { year, ...(userId ? { userId } : {}) } }),
+  list:         (params) => api.get('/transactions', { params }),
+  get:          (id)     => api.get(`/transactions/${id}`),
+  create:       (data)   => api.post('/transactions', data),
+  summary:      (userId) => api.get('/transactions/summary', { params: userId ? { userId } : {} }),
+  monthlyPL:    (year, userId) => api.get('/transactions/profit-loss/monthly', { params: { year, ...(userId ? { userId } : {}) } }),
+  nextInvoice:  ()       => api.get('/transactions/next-invoice'),
 }
 
 export const paymentApi = {

@@ -48,6 +48,16 @@ public class Replacement extends BaseEntity {
     @Column(name = "replacement_date", nullable = false)
     private LocalDate replacementDate;
 
+    // Item received from company (warranty replacement / company credit)
+    @Column(name = "company_item_name", length = 200)
+    private String companyItemName;
+
+    @Column(name = "company_serial_number", length = 100)
+    private String companySerialNumber;
+
+    @Column(name = "company_challan_number", length = 100)
+    private String companyChallanNumber;
+
     @Column(columnDefinition = "TEXT")
     private String notes;
 }

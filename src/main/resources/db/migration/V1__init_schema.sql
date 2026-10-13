@@ -14,7 +14,8 @@ CREATE TABLE users (
     role        VARCHAR(20)  NOT NULL DEFAULT 'STAFF' CHECK (role IN ('ADMIN','MANAGER','STAFF')),
     active      BOOLEAN NOT NULL DEFAULT TRUE,
     created_at  TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at  TIMESTAMP NOT NULL DEFAULT NOW()
+    updated_at  TIMESTAMP NOT NULL DEFAULT NOW(),
+    created_by  BIGINT
 );
 
 CREATE INDEX idx_users_email ON users(email);
@@ -106,22 +107,26 @@ CREATE INDEX idx_payments_mode ON payments(payment_mode);
 -- REPLACEMENTS / EXCHANGES
 -- ─────────────────────────────────────────
 CREATE TABLE replacements (
-    id                   BIGSERIAL PRIMARY KEY,
-    customer_name        VARCHAR(150) NOT NULL,
-    customer_phone       VARCHAR(15),
-    given_stock_id       BIGINT REFERENCES stock(id),
-    given_item_name      VARCHAR(200) NOT NULL,
-    given_sku            VARCHAR(100),
-    given_value          NUMERIC(12,2) DEFAULT 0,
-    received_item_name   VARCHAR(200) NOT NULL,
-    received_sku         VARCHAR(100),
-    received_value       NUMERIC(12,2) DEFAULT 0,
-    difference_amount    NUMERIC(12,2) DEFAULT 0,
-    replacement_date     DATE NOT NULL,
-    notes                TEXT,
-    created_at           TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at           TIMESTAMP NOT NULL DEFAULT NOW(),
-    created_by           BIGINT REFERENCES users(id)
+    id                      BIGSERIAL PRIMARY KEY,
+    customer_name           VARCHAR(150) NOT NULL,
+    customer_phone          VARCHAR(15),
+    given_stock_id          BIGINT REFERENCES stock(id),
+    given_item_name         VARCHAR(200) NOT NULL,
+    given_sku               VARCHAR(100),
+    given_challan_number    VARCHAR(100),
+    given_value             NUMERIC(12,2) DEFAULT 0,
+    received_item_name      VARCHAR(200) NOT NULL,
+    received_sku            VARCHAR(100),
+    received_value          NUMERIC(12,2) DEFAULT 0,
+    difference_amount       NUMERIC(12,2) DEFAULT 0,
+    replacement_date        DATE NOT NULL,
+    company_item_name       VARCHAR(200),
+    company_serial_number   VARCHAR(100),
+    company_challan_number  VARCHAR(100),
+    notes                   TEXT,
+    created_at              TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at              TIMESTAMP NOT NULL DEFAULT NOW(),
+    created_by              BIGINT REFERENCES users(id)
 );
 
 CREATE INDEX idx_replacements_date     ON replacements(replacement_date);
@@ -174,4 +179,4 @@ CREATE INDEX idx_audit_time   ON audit_logs(performed_at);
 -- password = Admin@123 (BCrypt)
 -- ─────────────────────────────────────────
 INSERT INTO users (name, email, password, role)
-VALUES ('Admin', 'admin@stockpro.com', '$2a$12$LQv3c1yqBWVHxkd0LQ1Ns.pHHBzJDn1O6c9YvP2R0MZ8mLsXw4Rma', 'ADMIN');
+VALUES ('Admin', 'admin@stockpro.com', '$2a$10$VwykaCK7DJr8KWwwb2Ziyec7vCUSKMbYr0iPloxk5ydgdZ6qWh.P2', 'ADMIN');

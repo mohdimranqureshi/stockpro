@@ -27,6 +27,12 @@ public class TransactionController {
 
     private final TransactionService transactionService;
 
+    @GetMapping("/next-invoice")
+    @Operation(summary = "Get next auto-incremented invoice number (e.g. INV-000001)")
+    public ResponseEntity<ApiResponse<String>> nextInvoice() {
+        return ResponseEntity.ok(ApiResponse.ok(transactionService.nextInvoiceNumber()));
+    }
+
     @GetMapping
     @Operation(summary = "List transactions with filters: type, date range, party, pagination. " +
             "Admins can pass userId to filter by a specific user; non-admins always see only their own.")

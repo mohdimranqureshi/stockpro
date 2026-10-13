@@ -37,6 +37,12 @@ public class Stock extends BaseEntity {
     @Column(length = 100)
     private String barcode;
 
+    @Column(name = "serial_number", length = 100)
+    private String serialNumber;
+
+    @Column(name = "challan_number", length = 100)
+    private String challanNumber;
+
     @Column(length = 30)
     private String unit = "PCS";
 

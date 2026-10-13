@@ -8,3 +8,6 @@ frontend/node_modules/
 .idea/
 *.iml
 *.log
+/.apt_generated/
+/.apt_generated_tests/
+/bin/

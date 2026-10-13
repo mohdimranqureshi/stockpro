@@ -31,6 +31,8 @@ public class StockRequest {
     private StockStatus status = StockStatus.AVAILABLE;
 
     private String barcode;
+    private String serialNumber;
+    private String challanNumber;
     private String unit = "PCS";
     private Integer quantity = 1;
     private String hsnCode;

@@ -20,6 +20,14 @@ public class TransactionRequest {
     private String itemName;
 
     private String sku;
+    private String serialNumber;
+    private String vehicleNumber;
+    private String hsnCode;
+    private BigDecimal gstRate       = BigDecimal.ZERO;
+    private String scrapType;
+    private BigDecimal scrapWeight   = BigDecimal.ZERO;
+    private BigDecimal scrapRate     = BigDecimal.ZERO;
+    private BigDecimal scrapDeduction = BigDecimal.ZERO;
 
     @NotBlank(message = "Party name is required")
     private String partyName;

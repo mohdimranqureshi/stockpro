@@ -55,7 +55,7 @@ public class ReplacementService {
 		return replacementRepository.findByFiltersWithCustomerName(from, to, search, createdBy, pageable);
 	}
 
-	public Replacement findById(Long id) {
+	public Replacement findById(Long id) { 
 		Replacement r = replacementRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Replacement", id));
 		if (!currentUser.isAdmin() && !r.getCreatedBy().equals(currentUser.getUserId())) {

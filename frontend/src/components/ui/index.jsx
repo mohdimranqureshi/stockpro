@@ -1,22 +1,45 @@
 import { X } from 'lucide-react'
 
 // ── Modal ─────────────────────────────────────────────────────
+
 export function Modal({ title, onClose, children, size = 'md' }) {
-  const widths = { sm: 'max-w-sm', md: 'max-w-lg', lg: 'max-w-2xl', xl: 'max-w-3xl' }
+  const widths = {
+    sm: 'max-w-sm',
+    md: 'max-w-lg',
+    lg: 'max-w-2xl',
+    xl: 'max-w-3xl',
+  }
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4 overflow-y-auto">
-      <div className={`bg-white rounded-2xl shadow-2xl w-full ${widths[size]} my-4`}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100">
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-start sm:items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <div
+        className={`bg-white rounded-2xl shadow-2xl w-full ${widths[size]} max-h-[calc(100dvh-1rem)] sm:max-h-[calc(100dvh-2rem)] flex flex-col my-auto`}
+      >
+        {/* Fixed header */}
+        <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-4 border-b border-gray-100 shrink-0">
+          <h3 className="text-lg font-bold text-gray-800 min-w-0 break-words">
+            {title}
+          </h3>
+
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close modal"
+            className="text-gray-400 hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100 shrink-0"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="p-6">{children}</div>
+
+        {/* Scrollable content */}
+        <div className="p-4 sm:p-6 overflow-y-auto min-h-0">
+          {children}
+        </div>
       </div>
     </div>
   )
 }
+
 
 // ── Badge ─────────────────────────────────────────────────────
 const BADGE_COLORS = {

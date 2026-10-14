@@ -2,6 +2,8 @@ package com.dealerpro.entity;
 
 import com.dealerpro.entity.enums.FlowType;
 import com.dealerpro.entity.enums.PaymentMode;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,6 +13,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "payments")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Payment extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

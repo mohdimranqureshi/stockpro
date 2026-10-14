@@ -1,12 +1,15 @@
 package com.dealerpro.service.impl;
 
 import com.dealerpro.dto.request.TransactionRequest;
+import com.dealerpro.entity.Payment;
 import com.dealerpro.entity.Stock;
 import com.dealerpro.entity.Transaction;
+import com.dealerpro.entity.enums.FlowType;
 import com.dealerpro.entity.enums.StockStatus;
 import com.dealerpro.entity.enums.TransactionType;
 import com.dealerpro.exception.BusinessException;
 import com.dealerpro.exception.ResourceNotFoundException;
+import com.dealerpro.repository.PaymentRepository;
 import com.dealerpro.repository.StockRepository;
 import com.dealerpro.repository.TransactionRepository;
 import com.dealerpro.security.service.CurrentUserService;
@@ -24,6 +27,7 @@ import java.util.List;
 public class TransactionService {
 
 	private final TransactionRepository transactionRepository;
+	private final PaymentRepository paymentRepository;
 	private final StockRepository stockRepository;
 	private final CurrentUserService currentUser;
 
@@ -37,8 +41,13 @@ public class TransactionService {
 		if (req.getStockId() != null) {
 			stock = stockRepository.findById(req.getStockId())
 					.orElseThrow(() -> new ResourceNotFoundException("Stock", req.getStockId()));
-			if (req.getType() == TransactionType.SALE && stock.getStatus() != StockStatus.AVAILABLE) {
-				throw new BusinessException("Item is not available for sale. Status: " + stock.getStatus());
+			if (req.getType() == TransactionType.SALE) {
+				if (stock.getStatus() != StockStatus.AVAILABLE) {
+					throw new BusinessException("Item is not available for sale. Status: " + stock.getStatus());
+				}
+				if (stock.getQuantity() != null && stock.getQuantity() <= 0) {
+					throw new BusinessException("Item is out of stock.");
+				}
 			}
 		}
 
@@ -67,9 +76,26 @@ public class TransactionService {
 		tx = transactionRepository.save(tx);
 
 		if (stock != null && req.getType() == TransactionType.SALE) {
-			stock.setStatus(StockStatus.SOLD);
+			int remaining = (stock.getQuantity() != null ? stock.getQuantity() : 1) - 1;
+			stock.setQuantity(Math.max(remaining, 0));
+			if (remaining <= 0) {
+				stock.setStatus(StockStatus.SOLD);
+			}
 			stockRepository.save(stock);
 		}
+
+		// Auto-create payment record for SALE transactions
+		if (req.getType() == TransactionType.SALE) {
+			Payment payment = Payment.builder().flowType(FlowType.INFLOW).amount(finalAmount)
+					.paymentDate(req.getTransactionDate() != null ? req.getTransactionDate() : LocalDate.now())
+					.partyName(req.getPartyName() != null ? req.getPartyName() : "Unknown")
+					.paymentMode(req.getPaymentMode() != null ? req.getPaymentMode()
+							: com.dealerpro.entity.enums.PaymentMode.CASH)
+					.referenceNo(tx.getInvoiceNo()).category("PRODUCT").transaction(tx)
+					.notes("Auto-created from sale invoice " + tx.getInvoiceNo()).build();
+			paymentRepository.save(payment);
+		}
+
 		return tx;
 	}
 

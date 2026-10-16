@@ -35,6 +35,9 @@ public class PaymentService {
         if (req.getTransactionId() != null) {
             var tx = transactionRepository.findById(req.getTransactionId())
                     .orElseThrow(() -> new ResourceNotFoundException("Transaction", req.getTransactionId()));
+            if (!currentUser.isAdmin() && !java.util.Objects.equals(tx.getCreatedBy(), currentUser.getUserId())) {
+                throw new ResourceNotFoundException("Transaction", req.getTransactionId());
+            }
             payment.setTransaction(tx);
         }
         return paymentRepository.save(payment);

@@ -1,9 +1,9 @@
 package com.dealerpro.controller;
 
 import com.dealerpro.dto.response.ApiResponse;
-import com.dealerpro.entity.HsnMaster;
+import com.dealerpro.entity.HsnGstRate;
 import com.dealerpro.entity.SacMaster;
-import com.dealerpro.repository.HsnMasterRepository;
+import com.dealerpro.repository.HsnGstRateRepository;
 import com.dealerpro.repository.SacMasterRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -23,7 +23,7 @@ import java.util.List;
 @SecurityRequirement(name = "bearerAuth")
 public class HsnSacController {
 
-    private final HsnMasterRepository hsnRepo;
+    private final HsnGstRateRepository hsnRepo;
     private final SacMasterRepository sacRepo;
 
     /**
@@ -35,13 +35,13 @@ public class HsnSacController {
      */
     @GetMapping("/hsn")
     @Operation(summary = "Search HSN codes — code prefix first, then description keywords. Default 100 results.")
-    public ResponseEntity<ApiResponse<List<HsnMaster>>> searchHsn(
+    public ResponseEntity<ApiResponse<List<HsnGstRate>>> searchHsn(
             @RequestParam(defaultValue = "")  String q,
             @RequestParam(defaultValue = "100") int size) {
         // Cap at 500 to prevent accidental full-table dumps
         int safeSize = Math.min(size, 500);
         Pageable pageable = PageRequest.of(0, safeSize);
-        List<HsnMaster> results = hsnRepo.search(q, q, pageable).getContent();
+        List<HsnGstRate> results = hsnRepo.search(q, pageable).getContent();
         return ResponseEntity.ok(ApiResponse.ok(results));
     }
 

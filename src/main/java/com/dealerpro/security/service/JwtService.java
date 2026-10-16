@@ -47,7 +47,10 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        // Refresh tokens must not be accepted as access tokens
+        boolean isRefresh = "refresh".equals(extractClaim(token, c -> c.get("type", String.class)));
+        return username.equals(userDetails.getUsername()) && !isRefresh && !isTokenExpired(token)
+                && userDetails.isEnabled() && userDetails.isAccountNonLocked();
     }
 
     public String extractUsername(String token) {

@@ -41,6 +41,9 @@ public class TransactionService {
 		if (req.getStockId() != null) {
 			stock = stockRepository.findById(req.getStockId())
 					.orElseThrow(() -> new ResourceNotFoundException("Stock", req.getStockId()));
+			if (!currentUser.isAdmin() && !java.util.Objects.equals(stock.getCreatedBy(), currentUser.getUserId())) {
+				throw new ResourceNotFoundException("Stock", req.getStockId());
+			}
 			if (req.getType() == TransactionType.SALE) {
 				if (stock.getStatus() != StockStatus.AVAILABLE) {
 					throw new BusinessException("Item is not available for sale. Status: " + stock.getStatus());

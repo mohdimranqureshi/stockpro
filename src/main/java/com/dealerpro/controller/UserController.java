@@ -4,6 +4,7 @@ import com.dealerpro.dto.request.AuthRequest;
 import com.dealerpro.dto.response.ApiResponse;
 import com.dealerpro.entity.User;
 import com.dealerpro.entity.enums.UserRole;
+import com.dealerpro.exception.BusinessException;
 import com.dealerpro.exception.DuplicateResourceException;
 import com.dealerpro.exception.ResourceNotFoundException;
 import com.dealerpro.repository.UserRepository;
@@ -14,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,7 +59,7 @@ public class UserController {
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(UserRole.valueOf(request.getRole().toUpperCase()))
+                .role(parseRole(request.getRole()))
                 .active(true)
                 .build();
         userRepository.save(user);
@@ -89,7 +91,7 @@ public class UserController {
             @RequestBody Map<String, String> body) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
-        user.setRole(UserRole.valueOf(body.get("role").toUpperCase()));
+        user.setRole(parseRole(body.get("role")));
         userRepository.save(user);
         return ResponseEntity.ok(ApiResponse.ok("Role updated",
                 Map.of("id", user.getId(), "role", user.getRole())));
@@ -97,7 +99,11 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a user (cannot delete yourself)")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id,
+            @AuthenticationPrincipal User currentUser) {
+        if (currentUser.getId().equals(id)) {
+            throw new BusinessException("You cannot delete your own account");
+        }
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
         userRepository.delete(user);
@@ -112,12 +118,20 @@ public class UserController {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));
         String newPassword = body.get("password");
-        if (newPassword == null || newPassword.length() < 8) {
+        if (newPassword == null || newPassword.length() < 8 || newPassword.length() > 72) {
             return ResponseEntity.badRequest()
-                    .body(ApiResponse.fail("Password must be at least 8 characters"));
+                    .body(ApiResponse.fail("Password must be 8 to 72 characters"));
         }
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
         return ResponseEntity.ok(ApiResponse.ok("Password reset successfully", null));
+    }
+
+    private static UserRole parseRole(String role) {
+        try {
+            return UserRole.valueOf(role.trim().toUpperCase());
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new BusinessException("Invalid role");
+        }
     }
 }

@@ -11,7 +11,7 @@ public class AuthRequest {
     public static class Login {
         @NotBlank @Email
         private String email;
-        @NotBlank @Size(min = 6)
+        @NotBlank @Size(min = 6, max = 72)
         private String password;
     }
 
@@ -21,7 +21,7 @@ public class AuthRequest {
         private String name;
         @NotBlank @Email
         private String email;
-        @NotBlank @Size(min = 8)
+        @NotBlank @Size(min = 8, max = 72)
         private String password;
         private String role = "STAFF";
     }
@@ -29,6 +29,6 @@ public class AuthRequest {
     @Data
     public static class ChangePassword {
         @NotBlank private String currentPassword;
-        @NotBlank @Size(min = 8) private String newPassword;
+        @NotBlank @Size(min = 8, max = 72) private String newPassword;
     }
 }

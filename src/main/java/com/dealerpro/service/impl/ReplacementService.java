@@ -35,7 +35,10 @@ public class ReplacementService {
 				.companyChallanNumber(req.getCompanyChallanNumber()).build();
 
 		if (req.getGivenStockId() != null) {
-			stockRepository.findById(req.getGivenStockId()).ifPresent(r::setGivenStock);
+			stockRepository.findById(req.getGivenStockId())
+					.filter(s -> currentUser.isAdmin()
+							|| java.util.Objects.equals(s.getCreatedBy(), currentUser.getUserId()))
+					.ifPresent(r::setGivenStock);
 		}
 		return replacementRepository.save(r);
 	}

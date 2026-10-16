@@ -1,43 +1,39 @@
 package com.dealerpro.controller;
 
 import com.dealerpro.dto.response.ApiResponse;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dealerpro.entity.HsnGstRate;
+import com.dealerpro.repository.HsnGstRateRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/gst")
 @RequiredArgsConstructor
-@Slf4j
 @Tag(name = "GST Rate", description = "Fetch GST rate for a given HSN code")
 @SecurityRequirement(name = "bearerAuth")
 public class GstRateController {
 
-    private static final String RATES_URL = "https://hsncodefinder.app/api/rates.php";
-
-    private final ObjectMapper objectMapper;
+    private final HsnGstRateRepository hsnGstRateRepo;
 
     /**
      * GET /api/gst/rate?hsn=8528
      *
-     * Calls hsncodefinder.app/api/rates.php, filters by c == hsnCode,
-     * returns the GST rate (r field) for the matching entry.
+     * Looks up the GST rate in the hsn_gst_rate table, falling back to
+     * progressively shorter parent codes (8 -> 6 -> 4 -> 2 digits).
      *
      * Response: { hsnCode: "8528", gstRate: 18, found: true }
      *           { hsnCode: "9999", gstRate: null, found: false }
      */
     @GetMapping("/rate")
-    @Operation(summary = "Get GST rate for an HSN code from hsncodefinder.app")
+    @Operation(summary = "Get GST rate for an HSN code from the hsn_gst_rate table")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getGstRate(
             @RequestParam String hsn) {
 
@@ -46,37 +42,21 @@ public class GstRateController {
         result.put("found", false);
         result.put("gstRate", null);
 
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            String json = restTemplate.getForObject(RATES_URL, String.class);
+        String wanted = hsn.trim();
+        if (!wanted.matches("\\d{2,8}")) {
+            return ResponseEntity.ok(ApiResponse.ok("Invalid HSN code", result));
+        }
 
-            if (json == null || json.isBlank()) {
-                return ResponseEntity.ok(ApiResponse.ok("No data from GST API", result));
+        for (int len = wanted.length(); len >= 2; len -= (len > 2 ? 2 : 1)) {
+            List<HsnGstRate> rows = hsnGstRateRepo.findByHsnCodeOrderByIdAsc(wanted.substring(0, len));
+            if (!rows.isEmpty()) {
+                HsnGstRate row = rows.get(0);
+                result.put("gstRate", row.getGstRate());
+                result.put("found", true);
+                result.put("matchedCode", row.getHsnCode());
+                result.put("description", row.getDescription());
+                break;
             }
-
-            JsonNode root = objectMapper.readTree(json);
-
-            // Handle both array and object-with-array responses
-            JsonNode arr = root.isArray() ? root : root.path("data");
-
-            if (arr.isArray()) {
-                for (JsonNode node : arr) {
-                    // c = HSN code, r = GST rate
-                    String code = node.has("c") ? node.get("c").asText("").trim() : "";
-                    if (code.equalsIgnoreCase(hsn.trim())) {
-                        JsonNode rateNode = node.get("r");
-                        if (rateNode != null && !rateNode.isNull()) {
-                            double rate = rateNode.asDouble();
-                            result.put("gstRate", rate);
-                            result.put("found", true);
-                            result.put("description", node.has("d") ? node.get("d").asText("") : "");
-                        }
-                        break;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.warn("GST rate lookup failed for HSN {}: {}", hsn, e.getMessage());
         }
 
         return ResponseEntity.ok(ApiResponse.ok(result));

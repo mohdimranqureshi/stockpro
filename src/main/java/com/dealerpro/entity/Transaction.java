@@ -12,82 +12,87 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "transactions")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Transaction extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
-    private TransactionType type;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, length = 10)
+	private TransactionType type;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stock_id")
-    private Stock stock;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "stock_id")
+	private Stock stock;
 
-    @Column(name = "item_name", nullable = false, length = 200)
-    private String itemName;
+	@Column(name = "item_name", nullable = false, length = 200)
+	private String itemName;
 
-    @Column(length = 100)
-    private String sku;
+	@Column(length = 100)
+	private String sku;
 
-    @Column(name = "serial_number", length = 100)
-    private String serialNumber;
+	@Column(name = "serial_number", length = 100)
+	private String serialNumber;
 
-    @Column(name = "vehicle_number", length = 50)
-    private String vehicleNumber;
+	@Column(name = "vehicle_number", length = 50)
+	private String vehicleNumber;
 
-    @Column(name = "hsn_code", length = 20)
-    private String hsnCode;
+	@Column(name = "hsn_code", length = 20)
+	private String hsnCode;
 
-    @Column(name = "gst_rate", precision = 5, scale = 2)
-    private BigDecimal gstRate = BigDecimal.ZERO;
+	@Column(name = "gst_rate", precision = 5, scale = 2)
+	private BigDecimal gstRate = BigDecimal.ZERO;
 
-    @Column(name = "scrap_type", length = 100)
-    private String scrapType;
+	@Column(name = "scrap_type", length = 100)
+	private String scrapType;
 
-    @Column(name = "scrap_weight", precision = 10, scale = 3)
-    private BigDecimal scrapWeight = BigDecimal.ZERO;
+	@Column(name = "scrap_weight", precision = 10, scale = 3)
+	private BigDecimal scrapWeight = BigDecimal.ZERO;
 
-    @Column(name = "scrap_rate", precision = 12, scale = 2)
-    private BigDecimal scrapRate = BigDecimal.ZERO;
+	@Column(name = "scrap_rate", precision = 12, scale = 2)
+	private BigDecimal scrapRate = BigDecimal.ZERO;
 
-    @Column(name = "scrap_deduction", precision = 12, scale = 2)
-    private BigDecimal scrapDeduction = BigDecimal.ZERO;
+	@Column(name = "scrap_deduction", precision = 12, scale = 2)
+	private BigDecimal scrapDeduction = BigDecimal.ZERO;
 
-    @Column(name = "party_name", nullable = false, length = 150)
-    private String partyName;
+	@Column(name = "party_name", nullable = false, length = 150)
+	private String partyName;
 
-    @Column(name = "party_phone", length = 15)
-    private String partyPhone;
+	@Column(name = "party_phone", length = 15)
+	private String partyPhone;
 
-    @Column(name = "party_gstin", length = 20)
-    private String partyGstin;
+	@Column(name = "party_gstin", length = 20)
+	private String partyGstin;
 
-    @Column(nullable = false, precision = 12, scale = 2)
-    private BigDecimal amount;
+	@Column(nullable = false, precision = 12, scale = 2)
+	private BigDecimal amount;
 
-    @Column(precision = 12, scale = 2)
-    private BigDecimal discount = BigDecimal.ZERO;
+	@Column(precision = 12, scale = 2)
+	private BigDecimal discount = BigDecimal.ZERO;
 
-    @Column(name = "tax_amount", precision = 12, scale = 2)
-    private BigDecimal taxAmount = BigDecimal.ZERO;
+	@Column(name = "tax_amount", precision = 12, scale = 2)
+	private BigDecimal taxAmount = BigDecimal.ZERO;
 
-    @Column(name = "final_amount", nullable = false, precision = 12, scale = 2)
-    private BigDecimal finalAmount;
+	@Column(name = "final_amount", nullable = false, precision = 12, scale = 2)
+	private BigDecimal finalAmount;
 
-    @Column(name = "transaction_date", nullable = false)
-    private LocalDate transactionDate;
+	@Column(name = "transaction_date", nullable = false)
+	private LocalDate transactionDate;
 
-    @Column(name = "invoice_no", unique = true, length = 50)
-    private String invoiceNo;
+	@Column(name = "invoice_no", unique = true, length = 50)
+	private String invoiceNo;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "payment_mode", length = 20)
-    private PaymentMode paymentMode = PaymentMode.CASH;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "payment_mode", length = 20)
+	private PaymentMode paymentMode = PaymentMode.CASH;
 
-    @Column(columnDefinition = "TEXT")
-    private String notes;
+	@Column(columnDefinition = "TEXT")
+	private String notes;
 }

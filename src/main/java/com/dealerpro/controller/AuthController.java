@@ -24,48 +24,40 @@ import java.util.Map;
 @Tag(name = "Authentication", description = "Login, Register, Profile")
 public class AuthController {
 
-    private final AuthService authService;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+	private final AuthService authService;
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
 
-    @PostMapping("/login")
-    @Operation(summary = "Login with email & password")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> login(
-            @Valid @RequestBody AuthRequest.Login request) {
-        return ResponseEntity.ok(authService.login(request));
-    }
+	@PostMapping("/login")
+	@Operation(summary = "Login with email & password")
+	public ResponseEntity<ApiResponse<Map<String, Object>>> login(@Valid @RequestBody AuthRequest.Login request) {
+		return ResponseEntity.ok(authService.login(request));
+	}
 
-    @PostMapping("/register")
-    @Operation(summary = "Register a new user")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> register(
-            @Valid @RequestBody AuthRequest.Register request) {
-        return ResponseEntity.ok(authService.register(request));
-    }
+	@PostMapping("/register")
+	@Operation(summary = "Register a new user")
+	public ResponseEntity<ApiResponse<Map<String, Object>>> register(@Valid @RequestBody AuthRequest.Register request) {
+		return ResponseEntity.ok(authService.register(request));
+	}
 
-    @GetMapping("/me")
-    @Operation(summary = "Get current logged-in user profile")
-    @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> me(
-            @AuthenticationPrincipal User currentUser) {
-        return ResponseEntity.ok(ApiResponse.ok(Map.of(
-                "id",    currentUser.getId(),
-                "name",  currentUser.getName(),
-                "email", currentUser.getEmail(),
-                "role",  currentUser.getRole()
-        )));
-    }
+	@GetMapping("/me")
+	@Operation(summary = "Get current logged-in user profile")
+	@SecurityRequirement(name = "bearerAuth")
+	public ResponseEntity<ApiResponse<Map<String, Object>>> me(@AuthenticationPrincipal User currentUser) {
+		return ResponseEntity.ok(ApiResponse.ok(Map.of("id", currentUser.getId(), "name", currentUser.getName(),
+				"email", currentUser.getEmail(), "role", currentUser.getRole())));
+	}
 
-    @PostMapping("/change-password")
-    @Operation(summary = "Change password for the currently logged-in user")
-    @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<ApiResponse<Void>> changePassword(
-            @AuthenticationPrincipal User currentUser,
-            @Valid @RequestBody AuthRequest.ChangePassword request) {
-        if (!passwordEncoder.matches(request.getCurrentPassword(), currentUser.getPassword())) {
-            throw new BusinessException("Current password is incorrect");
-        }
-        currentUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        userRepository.save(currentUser);
-        return ResponseEntity.ok(ApiResponse.ok("Password changed successfully", null));
-    }
+	@PostMapping("/change-password")
+	@Operation(summary = "Change password for the currently logged-in user")
+	@SecurityRequirement(name = "bearerAuth")
+	public ResponseEntity<ApiResponse<Void>> changePassword(@AuthenticationPrincipal User currentUser,
+			@Valid @RequestBody AuthRequest.ChangePassword request) {
+		if (!passwordEncoder.matches(request.getCurrentPassword(), currentUser.getPassword())) {
+			throw new BusinessException("Current password is incorrect");
+		}
+		currentUser.setPassword(passwordEncoder.encode(request.getNewPassword()));
+		userRepository.save(currentUser);
+		return ResponseEntity.ok(ApiResponse.ok("Password changed successfully", null));
+	}
 }

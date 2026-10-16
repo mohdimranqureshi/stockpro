@@ -6,7 +6,7 @@ import { authApi } from '../lib/api'
 import useAuthStore from '../store/authStore'
 
 export default function LoginPage() {
-  const [form, setForm] = useState({ email: 'admin@stockpro.com', password: 'Admin@123' })
+  const [form, setForm] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [showPwd, setShowPwd] = useState(false)
   const { setAuth } = useAuthStore()
@@ -51,7 +51,7 @@ export default function LoginPage() {
                 className="input"
                 value={form.email}
                 onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                placeholder="admin@stockpro.com"
+                placeholder="Email Address"
               />
             </div>
             <div>
@@ -77,15 +77,6 @@ export default function LoginPage() {
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
-          <p className="text-center text-xs text-gray-400 mt-6">
-            Default: admin@stockpro.com / Admin@123
-          </p>
-          <p className="text-center text-sm text-gray-500 mt-4">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-blue-600 font-semibold hover:underline">
-              Create one
-            </Link>
-          </p>
         </div>
       </div>
     </div>

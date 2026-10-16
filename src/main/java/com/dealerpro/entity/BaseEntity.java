@@ -16,15 +16,15 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+	@CreatedDate
+	@Column(name = "created_at", nullable = false, updatable = false)
+	private LocalDateTime createdAt;
 
-    @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+	@LastModifiedDate
+	@Column(name = "updated_at", nullable = false)
+	private LocalDateTime updatedAt;
 
-    @CreatedBy
-    @Column(name = "created_by", updatable = false)
-    private Long createdBy;
+	@CreatedBy
+	@Column(name = "created_by", updatable = false)
+	private Long createdBy;
 }

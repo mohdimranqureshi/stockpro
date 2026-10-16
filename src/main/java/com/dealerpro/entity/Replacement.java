@@ -8,56 +8,61 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "replacements")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Replacement extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(name = "customer_name", nullable = false, length = 150)
-    private String customerName;
+	@Column(name = "customer_name", nullable = false, length = 150)
+	private String customerName;
 
-    @Column(name = "customer_phone", length = 15)
-    private String customerPhone;
+	@Column(name = "customer_phone", length = 15)
+	private String customerPhone;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "given_stock_id")
-    private Stock givenStock;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "given_stock_id")
+	private Stock givenStock;
 
-    @Column(name = "given_item_name", nullable = false, length = 200)
-    private String givenItemName;
+	@Column(name = "given_item_name", nullable = false, length = 200)
+	private String givenItemName;
 
-    @Column(name = "given_sku", length = 100)
-    private String givenSku;
+	@Column(name = "given_sku", length = 100)
+	private String givenSku;
 
-    @Column(name = "given_value", precision = 12, scale = 2)
-    private BigDecimal givenValue = BigDecimal.ZERO;
+	@Column(name = "given_value", precision = 12, scale = 2)
+	private BigDecimal givenValue = BigDecimal.ZERO;
 
-    @Column(name = "received_item_name", nullable = false, length = 200)
-    private String receivedItemName;
+	@Column(name = "received_item_name", nullable = false, length = 200)
+	private String receivedItemName;
 
-    @Column(name = "received_sku", length = 100)
-    private String receivedSku;
+	@Column(name = "received_sku", length = 100)
+	private String receivedSku;
 
-    @Column(name = "received_value", precision = 12, scale = 2)
-    private BigDecimal receivedValue = BigDecimal.ZERO;
+	@Column(name = "received_value", precision = 12, scale = 2)
+	private BigDecimal receivedValue = BigDecimal.ZERO;
 
-    @Column(name = "difference_amount", precision = 12, scale = 2)
-    private BigDecimal differenceAmount = BigDecimal.ZERO;
+	@Column(name = "difference_amount", precision = 12, scale = 2)
+	private BigDecimal differenceAmount = BigDecimal.ZERO;
 
-    @Column(name = "replacement_date", nullable = false)
-    private LocalDate replacementDate;
+	@Column(name = "replacement_date", nullable = false)
+	private LocalDate replacementDate;
 
-    // Item received from company (warranty replacement / company credit)
-    @Column(name = "company_item_name", length = 200)
-    private String companyItemName;
+	// Item received from company (warranty replacement / company credit)
+	@Column(name = "company_item_name", length = 200)
+	private String companyItemName;
 
-    @Column(name = "company_serial_number", length = 100)
-    private String companySerialNumber;
+	@Column(name = "company_serial_number", length = 100)
+	private String companySerialNumber;
 
-    @Column(name = "company_challan_number", length = 100)
-    private String companyChallanNumber;
+	@Column(name = "company_challan_number", length = 100)
+	private String companyChallanNumber;
 
-    @Column(columnDefinition = "TEXT")
-    private String notes;
+	@Column(columnDefinition = "TEXT")
+	private String notes;
 }
